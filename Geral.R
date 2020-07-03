@@ -19,14 +19,12 @@ dt_ini <- 201503
 } 
 
 # Blocos de calculos
-# {
-#   block_1 = as.data.frame(read_excel( "C:/Users/BXnote/Desktop/R/indices SUSEP/block_1.xlsx"))
-#   block_1 = block_1 %>% distinct(., name , .keep_all = TRUE) 
-#   block_2 = as.data.frame(read_excel( "C:/Users/BXnote/Desktop/R/indices SUSEP/block_2.xlsx"))
-#   block_2 = block_2 %>% distinct(., name , .keep_all = TRUE) 
-#   block_3 = as.data.frame(read_excel( "C:/Users/BXnote/Desktop/R/indices SUSEP/block_3.xlsx"))
-#   block_3 = block_3 %>% distinct(., name , .keep_all = TRUE) 
-# } 
+{
+  block_1 = as.data.frame(read_excel( "C:/Indices_SUSEP_git/Indices-SUSEP/block_1.xlsx"))
+  block_2 = as.data.frame(read_excel( "C:/Indices_SUSEP_git/Indices-SUSEP/block_2.xlsx"))
+  block_3 = as.data.frame(read_excel( "C:/Indices_SUSEP_git/Indices-SUSEP/block_3.xlsx"))
+  
+}
 
 
 #   BASE DE DADOS GERAL  ----
@@ -217,13 +215,13 @@ info <- function(x) {
   return(head(x))
 }
 
-# Feunção "ver ()" dataframe em grafico  --------------------
-
-ver <- function(x) {
-  df = df_all[df_all$cmpid == x , ]
-  return(plot(df$damesano, df$valor  , "p"))
-  
-}
+# # Feunção "ver ()" dataframe em grafico  --------------------
+# 
+# ver <- function(x) {
+#   df = df_all[df_all$cmpid == x , ]
+#   return(plot(df$damesano, df$valor  , "p"))
+#   
+# }
 
 
 # Feunção plotar indice da empresa  --------------------
@@ -250,55 +248,11 @@ indice_grafico  <- function(df, coenti) {
 
 df_all <- df_all_1  
 
-# for (i in 1:nrow(block_1)) {
-#   class(eval(parse(text=block_1[i,1]))) 
-# }
-
-{
-  prem_ced_resseg_bruto <- acu(11323, "prem_ced_resseg_bruto")
-  prem_emit_liq <- acu(6183, "prem_emit_liq")
-  prem_ganho <- acu(4027, "prem_ganho")
-  rec_contr_prev <- acu(7186, "rec_contr_prev")
-  resdas_tx_gestao <- acu(6238, "resdas_tx_gestao")
-  var_opt_prev <- acu(6256, "var_opt_prev")
-  custo_aq_seg <- acu(11237 , "custo_aq_seg")
-  custo_aq_prev <- acu(11249 , "custo_aq_prev")
-  out_rec_dsp_seg <- acu(6202, "out_rec_dsp_seg")
-  rec_emissao_apolice_dpvat <- acu(11231 , "rec_emissao_apolice_dpvat")
-  out_rec_dsp_prev <- acu(6261 , "out_rec_dsp_prev")
-  res_resseg_seg <- acu(11238, "res_resseg_seg")
-  res_resseg_prev <- acu( 11250,"res_resseg_prev")
-  dsp_adm <- acu(4069, "dep_adm")
-  dsp_trib <- acu(4070, "dsp_trib")
-  sin_oco <- acu(11232, "sin_oco")
-  dsp_ben <- acu(11248, "dsp_ben")
-  ativo_circ <- incremental(1479,"ativo_circ")
-  custo_aq_dif_cp <- incremental(11160,"custo_aq_dif_cp" )
-  dsp_ant_cp <- incremental(351,"dsp_ant_cp")
-  pasivo_circ <- incremental(1040,"pasivo_circ")
-  ativo_rlp <- incremental(331,"ativo_rlp")
-  custo_aq_diflp <- incremental(11187,"custo_aq_diflp")
-  dsp_ant_lp <- incremental(5503,"dsp_ant_lp")
-  passivo_n_circ <- incremental(6449,"passivo_n_circ")
-  ativo_imob <- incremental(1503,"ativo_imob")
-  im_urb_renda <- incremental(6466, "im_urb_renda")
-  im_rural <- incremental(6467, "im_rural")
-  red_val_rec_im_urb <- incremental(11194, "red_val_rec_im_urb")
-  red_val_rec_im_rural <- incremental(11308, "red_val_rec_im_rural")
-  deprec_im_urb <- incremental(11309, "deprec_im_urb")
-  deprec_im_rural <- incremental(11310,  "deprec_im_rural")
-  ativo_total <- incremental(1039, "ativo_total")
-  patr_liq <- incremental(3333,  "patr_liq" )
-  part_soc_fin <- incremental(6452, 'part_soc_fin' )
-  part_soc_n_fin <- incremental(6453, 'part_soc_n_fin' )
-  part_soc_fin_ext <- incremental(6454, 'part_soc_fin_ext' )
-  part_soc_n_fin_ext <- incremental(6455, 'part_soc_n_fin_ext' )
-  red_val_rec <- incremental(11191, 'red_val_rec' )
-  lucro_liq <- acu(518,"lucro_liq")
-  rec_aj_inv_ctrl_col <- acu(6327,"rec_aj_inv_ctrl_col")
-  dsp_aj_inv_ctrl_col <- acu(6328,"dsp_aj_inv_ctrl_col")
-  res_fin <- acu(6322, "res_fin")
+for (i in 1:nrow(block_1)) {
+  class(eval(parse(text=block_1[i,1])))
 }
+
+
 
 #      Índices para Análise Econômico-Financeira das Supervisionadas     -----------------------------------------------
 # Necessaria as funções acu(), ver(), info(), indice_grafico()
