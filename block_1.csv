@@ -1,0 +1,44 @@
+function,alocation_mode,name,cmpid
+"prem_ced_resseg_bruto <- acu(11323, ""prem_ced_resseg_bruto"")",acu,prem_ced_resseg_bruto,11323
+"prem_emit_liq <- acu(6183, ""prem_emit_liq"")",acu,prem_emit_liq,6183
+"prem_ganho <- acu(4027, ""prem_ganho"")",acu,prem_ganho,4027
+"rec_contr_prev <- acu(7186, ""rec_contr_prev"")",acu,rec_contr_prev,7186
+"resdas_tx_gestao <- acu(6238, ""resdas_tx_gestao"")",acu,resdas_tx_gestao,6238
+"var_opt_prev <- acu(6256, ""var_opt_prev"")",acu,var_opt_prev,6256
+"custo_aq_seg <- acu(11237 , ""custo_aq_seg"")",acu,custo_aq_seg,11237
+"custo_aq_prev <- acu(11249 , ""custo_aq_prev"")",acu,custo_aq_prev,11249
+"out_rec_dsp_seg <- acu(6202, ""out_rec_dsp_seg"")",acu,out_rec_dsp_seg,6202
+"rec_emissao_apolice_dpvat <- acu(11231 , ""rec_emissao_apolice_dpvat"")",acu,rec_emissao_apolice_dpvat,11231
+"out_rec_dsp_prev <- acu(6261 , ""out_rec_dsp_prev"")",acu,out_rec_dsp_prev,6261
+"res_resseg_seg <- acu(11238, ""res_resseg_seg"")",acu,res_resseg_seg,11238
+"res_resseg_prev <- acu( 11250,""res_resseg_prev"")",acu,res_resseg_prev,11250
+"dsp_adm <- acu(4069, ""dep_adm"")",acu,dsp_adm,4069
+"dsp_trib <- acu(4070, ""dsp_trib"")",acu,dsp_trib,4070
+"sin_oco <- acu(11232, ""sin_oco"")",acu,sin_oco,11232
+"dsp_ben <- acu(11248, ""dsp_ben"")",acu,dsp_ben,11248
+"ativo_circ <- incremental(1479,""ativo_circ"")",incremental,ativo_circ,1479
+"custo_aq_dif_cp <- incremental(11160,""custo_aq_dif_cp"" )",incremental,custo_aq_dif_cp,11160
+"dsp_ant_cp <- incremental(351,""dsp_ant_cp"")",incremental,dsp_ant_cp,351
+"pasivo_circ <- incremental(1040,""pasivo_circ"")",incremental,pasivo_circ,1040
+"ativo_rlp <- incremental(331,""ativo_rlp"")",incremental,ativo_rlp,331
+"custo_aq_diflp <- incremental(11187,""custo_aq_diflp"")",incremental,custo_aq_diflp,11187
+"dsp_ant_lp <- incremental(5503,""dsp_ant_lp"")",incremental,dsp_ant_lp,5503
+"passivo_n_circ <- incremental(6449,""passivo_n_circ"")",incremental,passivo_n_circ,6449
+"ativo_imob <- incremental(1503,""ativo_imob"")",incremental,ativo_imob,1503
+"im_urb_renda <- incremental(6466, ""im_urb_renda"")",incremental,im_urb_renda,6466
+"im_rural <- incremental(6467, ""im_rural"")",incremental,im_rural,6467
+"red_val_rec_im_urb <- incremental(11194, ""red_val_rec_im_urb"")",incremental,red_val_rec_im_urb,11194
+"red_val_rec_im_rural <- incremental(11308, ""red_val_rec_im_rural"")",incremental,red_val_rec_im_rural,11308
+"deprec_im_urb <- incremental(11309, ""deprec_im_urb"")",incremental,deprec_im_urb,11309
+"deprec_im_rural <- incremental(11310,  ""deprec_im_rural"")",incremental,deprec_im_rural,11310
+"ativo_total <- incremental(1039, ""ativo_total"")",incremental,ativo_total,1039
+"patr_liq <- incremental(3333,  ""patr_liq"" )",incremental,patr_liq,3333
+"part_soc_fin <- incremental(6452, 'part_soc_fin' )",incremental,part_soc_fin,6452
+"part_soc_n_fin <- incremental(6453, 'part_soc_n_fin' )",incremental,part_soc_n_fin,6453
+"part_soc_fin_ext <- incremental(6454, 'part_soc_fin_ext' )",incremental,part_soc_fin_ext,6454
+"part_soc_n_fin_ext <- incremental(6455, 'part_soc_n_fin_ext' )",incremental,part_soc_n_fin_ext,6455
+"red_val_rec <- incremental(11191, 'red_val_rec' )",incremental,red_val_rec,11191
+"lucro_liq <- acu(518,""lucro_liq"")",acu,lucro_liq,518
+"rec_aj_inv_ctrl_col <- acu(6327,""rec_aj_inv_ctrl_col"")",acu,rec_aj_inv_ctrl_col,6327
+"dsp_aj_inv_ctrl_col <- acu(6328,""dsp_aj_inv_ctrl_col"")",acu,dsp_aj_inv_ctrl_col,6328
+"res_fin <- acu(6322, ""res_fin"")",acu,res_fin,6322
