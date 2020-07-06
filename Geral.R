@@ -20,9 +20,19 @@ dt_ini <- 201503
 
 # Blocos de calculos
 {
-  block_1 = as.data.frame(read_excel( "C:/Indices_SUSEP_git/Indices-SUSEP/block_1.xlsx"))
-  block_2 = as.data.frame(read_excel( "C:/Indices_SUSEP_git/Indices-SUSEP/block_2.xlsx"))
-  block_3 = as.data.frame(read_excel( "C:/Indices_SUSEP_git/Indices-SUSEP/block_3.xlsx"))
+
+  block_1 <- read_csv("https://raw.githubusercontent.com/brunocza/Indices-SUSEP/master/block_1.csv", 
+                      col_types = cols(alocation_mode = col_character(), 
+                                       cmpid = col_double(), `function` = col_character(), 
+                                       name = col_character()))
+  block_2 <- read_csv("https://raw.githubusercontent.com/brunocza/Indices-SUSEP/master/block_2.csv", 
+                      col_types = cols(alocation_mode = col_character(), 
+                                       cmpid = col_double(), `function` = col_character(), 
+                                       name = col_character()))
+  block_3 <- read_csv("https://raw.githubusercontent.com/brunocza/Indices-SUSEP/master/block_3.csv", 
+                      col_types = cols(alocation_mode = col_character(), 
+                                       cmpid = col_double(), `function` = col_character(), 
+                                       name = col_character()))
   
 }
 
@@ -37,6 +47,34 @@ dt_ini <- 201503
                                           locale = locale(decimal_mark = ","),
                                           trim_ws = TRUE))
   
+  
+  #nova maneira de importação
+  # destfile<- tempdir()
+  # download.file(url="https://www2.susep.gov.br/download/estatisticas/BaseCompleta.zip", 
+  #               destfile = paste0(destfile,"/BaseCompleta.zip"), mode="wb")
+  # 
+  # 
+  # lista<-unzip(paste0(destfile,"/BaseCompleta.zip"), 
+  #              list = TRUE)[34,1]
+  # 
+  # # SES_Balanco.csv
+  # 
+  # files<-unzip(paste0(destfile,"/BaseCompleta.zip"), files= "SES_Balanco.csv",
+  #              exdir= destfile)
+  # 
+  # 
+  # listaarq <-as.data.frame(read_delim(files,
+  #                                     ";", escape_double = FALSE, col_types = cols(coenti = col_number(),
+  #                                                                                  cmpid = col_double(),
+  #                                                                                  damesano = col_date(format = "%Y%m"),
+  #                                                                                  quadro = col_skip(), seq = col_skip()),
+  #                                     locale = locale(decimal_mark = ","),
+  #                                     trim_ws = TRUE))
+  # file.remove(files)
+  # 
+  # 
+  
+  
 }# SES_Balanco.CSV  
 
 
@@ -47,67 +85,40 @@ dt_ini <- 201503
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 {
-  depara <-
-    read.csv(
-      "C:/Users/BXnote/Desktop/R/indices SUSEP/LISTAEMPRESAS.csv",
-      header = TRUE,
-      sep = ";",
-      dec = ","
-    )
-  colnames(depara)[colnames(depara) == 'CodigoFIP'] <- 'coenti'
+  LISTAEMPRESAS <- read_delim("https://www2.susep.gov.br/menuestatistica/SES/download/LISTAEMPRESAS.csv", 
+                              ";", escape_double = FALSE, col_types = cols(CNPJ = col_character(), 
+                                                                           CodigoFIP = col_double(), NomeEntidade = col_character()), 
+                              locale = locale(encoding = "ISO-8859-1"), 
+                              trim_ws = TRUE) ; colnames(LISTAEMPRESAS)[colnames(LISTAEMPRESAS) == 'CodigoFIP'] <- 'coenti'
+
   
-  
-} #depara
+} # LISTAEMPRESAS
+
+{
+only_usual_conti <- read_csv("https://raw.githubusercontent.com/brunocza/Indices-SUSEP/master/only_usual_conti.csv", 
+                             col_types = cols(CNPJ = col_character(), 
+                                              NomeEntidade = col_character(), coenti = col_double(), 
+                                              ramo = col_character()), locale = locale(encoding = "ISO-8859-1"))
+
+} # only_usual_conti
+
+
+
 
 
 # coenti_seguradoras ------------------------------------------------------------------------------
-
-{
-  coenti_seguradoras <- as.data.frame(read_excel( "C:/Users/BXnote/Desktop/R/indices SUSEP/coenti_seguradoras.xlsx"))
-  coenti_seguradoras$name <- NULL
-  coenti_seguradoras <- merge(coenti_seguradoras, depara, by="coenti", all.x = TRUE)
-  coenti_seguradoras <- coenti_seguradoras[complete.cases(coenti_seguradoras$NomeEntidade), ]
-  coenti_seguradoras$ramo = "seguradora"
-  
-  
-} # coenti_seguradoras
-
+coenti_seguradoras = only_usual_conti %>% filter(., ramo == "seguradora")
 
 # coenti_prev_comp --------------------------------------------------------------------------------
-
-{
-  coenti_prev_comp <- as.data.frame(read_excel( "C:/Users/BXnote/Desktop/R/indices SUSEP/coenti_prev_comp.xlsx"))
-  colnames(coenti_prev_comp)[colnames(coenti_prev_comp) == colnames(coenti_prev_comp)[1]] <- 'coenti'
-  coenti_prev_comp <- merge(coenti_prev_comp, depara, by="coenti", all.x = TRUE)
-  coenti_prev_comp$name <- NULL
-  coenti_prev_comp <- coenti_prev_comp[complete.cases(coenti_prev_comp$NomeEntidade), ]
-  coenti_prev_comp$ramo = "previdencia complementar"
-  
-} # coenti_prev_comp
-
+coenti_prev_comp = only_usual_conti %>% filter(., ramo == "previdencia complementar")
 
 # coenti_cap --------------------------------------------------------------------------------------
+coenti_cap = only_usual_conti %>% filter(., ramo == "captalizacao")
 
-{ 
-  coenti_cap <- as.data.frame(read_excel( "C:/Users/BXnote/Desktop/R/indices SUSEP/coenti_cap.xlsx"))
-  
-  # mode(coenti_cap[2,2])
-  # head(coenti_cap)
-  
-  colnames(coenti_cap)[colnames(coenti_cap) == colnames(coenti_cap) [1]] <- 'coenti'
-  
-  
-  
-  coenti_cap <- merge(coenti_cap, depara, by="coenti", all.x = TRUE)
-  coenti_cap$name <- NULL
-  
-  coenti_cap <- coenti_cap[complete.cases(coenti_cap$NomeEntidade), ]
-  
-  coenti_cap$ramo = "captalizacao"
-  
-}# coenti_cap 
 
-# df_all_1 ,df_all_1 E df_all_1
+
+# df_all_1 ,df_all_1 E df_all_1 ----
+
 {
   df_all_1 <- 
     SES_BALANCO %>% filter(.,
@@ -638,55 +649,8 @@ remove(list = block_1$name)
 
 df_all <- df_all_2
 
-# for (i in 1:nrow(block_2)) {
-#   class(eval(parse(text=block_2[i,1]))) 
-# }
-
-{
-  
-  sin_oco <- acu(11232, "sin_oco")
-  dsp_ben <- acu(11248, "dsp_ben")
-  prem_ganho <- acu(4027, "prem_ganho")
-  rec_contr_prev <- acu(7186, "rec_contr_prev")
-  resdas_tx_gestao <- acu(6238, "resdas_tx_gestao")
-  var_opt_prev <- acu(6256, "var_opt_prev")
-  res_fin <- acu(6322, "res_fin")
-  custo_aq_seg <- acu(11237, "custo_aq_seg")
-  custo_aq_prev <- acu(11249, "custo_aq_prev")
-  out_rec_dsp_seg <- acu(6202, "out_rec_dsp_seg")
-  rec_emissao_apolice_dpvat <- acu(11231, "rec_emissao_apolice_dpvat")
-  out_rec_dsp_prev <- acu(6261, "out_rec_dsp_prev")
-  res_resseg_seg <- acu(11238, "res_resseg_seg")
-  res_resseg_prev <- acu( 11250,"res_resseg_prev")
-  dsp_adm <- acu(4069, "dep_adm")
-  dsp_trib <- acu(4070, "dsp_trib")
-  ativo_circ <- incremental(1479,"ativo_circ")
-  custo_aq_dif_cp <- incremental(11160,"custo_aq_dif_cp" )
-  dsp_ant_cp <- incremental(351,"dsp_ant_cp")
-  pasivo_circ <- incremental(1040,"pasivo_circ")
-  ativo_rlp <- incremental(331,"ativo_rlp")
-  custo_aq_diflp <- incremental(11187,"custo_aq_diflp")
-  dsp_ant_lp <- incremental(5503,"dsp_ant_lp")
-  passivo_n_circ <- incremental(6449,"passivo_n_circ")
-  ativo_imob <- incremental(1503,"ativo_imob")
-  im_urb_renda <- incremental(6466, "im_urb_renda")
-  im_rural <- incremental(6467, "im_rural")
-  red_val_rec_im_urb <- incremental(11194, "red_val_rec_im_urb")
-  red_val_rec_im_rural <- incremental(11308, "red_val_rec_im_rural")
-  deprec_im_urb <- incremental(11309, "deprec_im_urb")
-  deprec_im_rural <- incremental(11310,"deprec_im_rural")
-  ativo_total <- incremental(1039, "ativo_total")
-  patr_liq <- incremental(3333,"patr_liq" )
-  patr_soc <- incremental(6151,"patr_soc" )
-  part_soc_fin <- incremental(6452, 'part_soc_fin' )
-  part_soc_n_fin <- incremental(6453, 'part_soc_n_fin' )
-  part_soc_fin_ext <- incremental(6454, 'part_soc_fin_ext' )
-  part_soc_n_fin_ext <- incremental(6455, 'part_soc_n_fin_ext' )
-  red_val_rec <- incremental(11191, 'red_val_rec' )
-  lucro_liq <- acu(518,"lucro_liq")
-  rec_aj_inv_ctrl_col <- acu(6327,"rec_aj_inv_ctrl_col")
-  dsp_aj_inv_ctrl_col <- acu(6328,"dsp_aj_inv_ctrl_col")
-  
+for (i in 1:nrow(block_2)) {
+  class(eval(parse(text=block_2[i,1])))
 }
 
 
@@ -1068,47 +1032,10 @@ remove(list = block_2$name)
 df_all <- df_all_3 
 
 
-# for (i in 1:nrow(block_3)) {
-#   class(eval(parse(text=block_3[i,1]))) 
-# }
-
-{
-  
-  custo_aq_cap <- acu(11256 , "custo_aq_cap")
-  rec_liq_tc <- acu(4059 , "rec_liq_tc" )
-  res_fin <- acu(6322, "res_fin")
-  out_rec_op_cap <- acu(11257, "out_rec_op_cap")
-  dsp_adm <- acu(4069, "dsp_adm")
-  dsp_trib <- acu(4070, "dsp_trib")
-  ativo_circ <- incremental(1479,"ativo_circ")
-  custo_aq_dif_cp <- incremental(11160,"custo_aq_dif_cp" )
-  dsp_ant_cp <- incremental(351,"dsp_ant_cp")
-  pasivo_circ <- incremental(1040,"pasivo_circ")
-  ativo_rlp <- incremental(331,"ativo_rlp")
-  custo_aq_diflp <- incremental(11187,"custo_aq_diflp")
-  dsp_ant_lp <- incremental(5503,"dsp_ant_lp")
-  passivo_n_circ <- incremental(6449,"passivo_n_circ")
-  ativo_imob <- incremental(1503,"ativo_imob")
-  im_urb_renda <- incremental(6466, "im_urb_renda")
-  im_rural <- incremental(6467, "im_rural")
-  red_val_rec_im_urb <- incremental(11194, "red_val_rec_im_urb")
-  red_val_rec_im_rural <- incremental(11308, "red_val_rec_im_rural")
-  deprec_im_urb <- incremental(11309, "deprec_im_urb")
-  deprec_im_rural <- incremental(11310,  "deprec_im_rural")
-  ativo_total <- incremental(1039, "ativo_total")
-  patr_liq <- incremental(3333,  "patr_liq" )
-  part_soc_fin <- incremental(6452, 'part_soc_fin' )
-  part_soc_n_fin <- incremental(6453, 'part_soc_n_fin' )
-  part_soc_fin_ext <- incremental(6454, 'part_soc_fin_ext' )
-  part_soc_n_fin_ext <- incremental(6455, 'part_soc_n_fin_ext' )
-  red_val_rec <- incremental(11191, 'red_val_rec' )
-  lucro_liq <- acu(518,"lucro_liq")
-  result_sort <- acu(11333, "result_sort")
-  rec_aj_inv_ctrl_col <- acu(6327,"rec_aj_inv_ctrl_col")
-  dsp_aj_inv_ctrl_col <- acu(6328,"dsp_aj_inv_ctrl_col")
-  
-  
+for (i in 1:nrow(block_3)) {
+  class(eval(parse(text=block_3[i,1])))
 }
+
 
 
 #      Índices para Análise Econômico-Financeira das Supervisionadas     -----------------------------------------------------------------------------
@@ -1536,7 +1463,7 @@ remove(df_all,df_all_1,df_all_2,df_all_3)
 # 
 # 
 # 
-# indices_01 <- merge(indices_01, depara, by="coenti", all.x = TRUE)
+# indices_01 <- merge(indices_01, LISTAEMPRESAS, by="coenti", all.x = TRUE)
 # 
 # write.table(
 #   indices_01,
