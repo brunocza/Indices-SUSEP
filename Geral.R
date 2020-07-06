@@ -1,6 +1,6 @@
 #__________________________________________________________________________________________________
 
-# Índices para Análise Econômico-Financeira das Supervisionadas pela SUSEP
+# Índices para Análise Econômico-Financeira das Supervisionadas pela SUSEP 
 
 # Autor: Bruno Czarnescki
 # Email: brunocza1@gmail.com
@@ -45,6 +45,9 @@ dt_ini <- 201501
                                        name = col_character()))
   
 }
+
+
+
 
 
 #   Base de dados principal  ----------------------------------------------------------------------
@@ -1318,6 +1321,61 @@ remove(list = block_3$name)
 #------------------------------------------------------------------------------------
 remove(df_all,df_all_1,df_all_2,df_all_3)
 
+# Gerando descrição dos indices para dashboard no power BI
+
+ind = c('IRETS',
+        'ISR',
+        'IDC',
+        'IORDO',
+        'IRRES',
+        'IDA',
+        'IC',
+        'ICA',
+        'ILC',
+        'ILT',
+        'IATIM',
+        'IIMOB',
+        'IPAS',
+        'ILPL',
+        'IREPLL',
+        'IGDF')
+
+nome_indi = c('Índice de Retenção de Seguros',
+              'Índice de Sinistralidade',
+              'Índice de Custos de Aquisição',
+              'Índice de Outras Receitas e Despesas Operacionais',
+              'Índice de Resultado de Resseguro',
+              'Índice de Despesas Administrativas',
+              'Índice Combinado',
+              'Índice Combinado Ampliado',
+              'Índice de Liquidez Corrente',
+              'Índice  de  Liquidez  Total',
+              'Índice de Imobilização do Ativo',
+              'Índice de Imobilização de Capitais Próprios',
+              'Índice de Participações Societárias',
+              'Índice  de Lucratividade  do  Patrimônio  Líquido',
+              'Índice de Resultado de Equivalência Patrimonial sobre o Lucro Líquido',
+              'Índice de Grau de Dependência Financeira')
+
+descricao =c('Afere, em termos percentuais, a representatividade dos prêmios retidos em relação ao total dos prêmios de seguros da Sociedade Seguradora.',
+             'Aferea representatividade, em termos percentuais, dos ‘Sinistros Ocorridos’ e ‘Despesas com Benefícios’ daSeguradora em relação aos ‘Prêmios Ganhos’ e receitas com produtos em regime de capitalização.',
+             'Afere a representatividade, em termos percentuais, dos ‘Custos de Aquisição’em relação aos ‘Prêmios Ganhos’ e receitascom produtos em regime de capitalização.',
+             'Afere a representatividade, em termos percentuais, das ‘Outras Receitas e Despesas Operacionais’ em relação aos ‘Prêmios Ganhos’ e receitas com produtos em regime de capitalização.',
+             'Afere a representatividade, em termos percentuais, do ‘Resultado com Resseguro’ em relação aos ‘Prêmios Ganhos’ e receitas com produtos em regime de capitalização.',
+             'Afere a representatividade, em termos percentuais, das ‘Despesas Administrativas’ e ‘Despesas com Tributos’ em relação aos ‘Prêmios Ganhos’ e receitas com produtos em regime de capitalização.',
+             'Afere a representatividade dos custosoperacionaistotais em relação aos ‘Prêmios Ganhos’ e receitas com produtos em regime de capitalização.',
+             'Afere a representatividade dos custosoperacionaistotais em relação aos ‘Prêmios Ganhos’, receitas com produtos em regime de capitalização e Resultado Financeiro.',
+             'Afere, em termos percentuais, aliquidez correnteda empresa, ou seja, se seus bens e direitos realizáveis nocurto prazo são suficientes para honrar seus compromissos de curto prazo.',
+             'Afere, em termos percentuais, a liquidez total da empresa, ou seja, se seus bens e direitos realizáveis no curto e no longo prazo são suficientes para honrar seus compromissos de curto e longo prazo.',
+             'Afere,   em   termos   percentuais,   a   representatividade   das imobilizações da empresa com relação ao seu ativo total.',
+             'Afere, em termos percentuais, a representatividade das imobilizações da empresa com relação ao seu capital próprio.',
+             'Afere o percentual do Patrimônio Líquido da Companhia que está aplicado em Participações Societárias.',
+             'Afere, em termos percentuais,a lucratividade da empresa sobre a média do ‘Patrimônio Líquido’ no período considerado.',
+             'Afere, em termos percentuais, a representatividade do Resultado de Equivalência Patrimonialsobre o Lucro Líquido do período.',
+             'Afere, em termos percentuais, a representatividade do Resultado Financeiro sobre oLucro Líquido do período.')
+
+ind_desc = data.frame(ind, nome_indi, descricao) ; remove(ind, nome_indi, descricao)
+
 
 
 # Exportar para planilha    --------------------
@@ -1332,7 +1390,7 @@ remove(df_all,df_all_1,df_all_2,df_all_3)
 # 
 # write.table(
 #   indices_01,
-#   file = 'C:/Users/BXnote/Desktop/R/indices SUSEP/indices_01.csv',
+#   file = 'C:/ ... /indices_01.csv',
 #   sep = ';',
 #   dec = '.',
 #   row.names = FALSE
