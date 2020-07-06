@@ -37,7 +37,7 @@ dt_ini <- 201503
 }
 
 
-#   BASE DE DADOS GERAL  ----_
+#   BASE DE DADOS GERAL  ----
 {
   SES_BALANCO <- as.data.frame(read_delim("C:/Users/BXnote/Desktop/R/indices SUSEP/BaseCompleta/SES_Balanco.csv",
                                           ";", escape_double = FALSE, col_types = cols(coenti = col_number(),
