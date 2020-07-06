@@ -1256,11 +1256,9 @@ remove(list = block_3$name)
   
   
   
-  indices_01 <- dplyr:: bind_rows(irets_1,  isr_1,  idc_1,  iordo_1,  irres_1,
-                                  ida_1, ic_1,  ica_1, ilc_1,  ilt_1,  iatim_1, iimob_1,  ipas_1, ilpl_1,  irepll_1,  igdf_1)
+  indices_01 <- dplyr:: bind_rows(irets_1,  isr_1,  idc_1,  iordo_1,  irres_1, ida_1, ic_1,  ica_1, ilc_1,  ilt_1,  iatim_1, iimob_1,  ipas_1, ilpl_1,  irepll_1,  igdf_1)
   
-  remove(irets_1, isr_1,  idc_1,  iordo_1,  irres_1, ida_1,  ic_1,   ica_1, 
-         ilc_1,   ilt_1,  iatim_1,  iimob_1,  ipas_1,  ilpl_1,  irepll_1,  igdf_1)
+  remove(irets_1, isr_1,  idc_1,  iordo_1,  irres_1, ida_1,  ic_1,   ica_1, ilc_1,   ilt_1,  iatim_1,  iimob_1,  ipas_1,  ilpl_1,  irepll_1,  igdf_1)
   
 }  # seguradora
 
@@ -1282,12 +1280,10 @@ remove(list = block_3$name)
   
   
   
-  indices_02 <- dplyr:: bind_rows(isr_2, dc_2,  iordo_2, irres_2, ida_2, ica_2,
-                                  ilc_2, ilt_2,  iatim_2, iimob_2,  ipas_2, ilpl_2,  irepll_2, igdf_2) 
+  indices_02 <- dplyr:: bind_rows(isr_2, dc_2,  iordo_2, irres_2, ida_2, ica_2,ilc_2, ilt_2,  iatim_2, iimob_2,  ipas_2, ilpl_2,  irepll_2, igdf_2) 
   
   
-  remove(isr_2, idc_2, iordo_2, irres_2, ida_2, ica_2, ilc_2, ilt_2,
-         iatim_2,  iimob_2,  ipas_2,  ilpl_2,  irepll_2,   igdf_2)
+  remove(isr_2, idc_2, iordo_2, irres_2, ida_2, ica_2, ilc_2, ilt_2,iatim_2,  iimob_2,  ipas_2,  ilpl_2,  irepll_2,   igdf_2)
   
 } # previdencia complementar
 
@@ -1308,18 +1304,17 @@ remove(list = block_3$name)
   igdf_3 = igdf_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'igdf')
   
   
-  indices_03 <- dplyr:: bind_rows(idc_3, iordo_3, ida_3, irsort_3, icc_3,
-                                  ilc_3, ilt_3, iatim_3, iimob_3,  ipas_3,
-                                  ilpl_3,  irepll_3, igdf_3) 
+  indices_03 <- dplyr:: bind_rows(idc_3, iordo_3, ida_3, irsort_3, icc_3,ilc_3, ilt_3, iatim_3, iimob_3,  ipas_3,ilpl_3,  irepll_3, igdf_3) 
   
   
-  remove(idc_3, iordo_3,  ida_3, irsort_3, icc_3, ilc_3, ilt_3, iatim_3,
-         iimob_3, ipas_3, ilpl_3, irepll_3, igdf_3)
+  remove(idc_3, iordo_3,  ida_3, irsort_3, icc_3, ilc_3, ilt_3, iatim_3,iimob_3, ipas_3, ilpl_3, irepll_3, igdf_3)
   
 }  # capitalização
 
 #------------------------------------------------------------------------------------
 remove(df_all,df_all_1,df_all_2,df_all_3)
+
+
 
 # Gerando descrição dos indices para dashboard no power BI
 
