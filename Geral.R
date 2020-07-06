@@ -1279,8 +1279,7 @@ remove(list = block_3$name)
   igdf_2 = igdf_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'igdf')
   
   
-  
-  indices_02 <- dplyr:: bind_rows(isr_2, dc_2,  iordo_2, irres_2, ida_2, ica_2,ilc_2, ilt_2,  iatim_2, iimob_2,  ipas_2, ilpl_2,  irepll_2, igdf_2) 
+  indices_02 <- dplyr:: bind_rows(isr_2, idc_2,  iordo_2, irres_2, ida_2, ica_2,ilc_2, ilt_2,  iatim_2, iimob_2,  ipas_2, ilpl_2,  irepll_2, igdf_2) 
   
   
   remove(isr_2, idc_2, iordo_2, irres_2, ida_2, ica_2, ilc_2, ilt_2,iatim_2,  iimob_2,  ipas_2,  ilpl_2,  irepll_2,   igdf_2)
