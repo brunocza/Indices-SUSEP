@@ -39,42 +39,43 @@ dt_ini <- 201503
 
 #   BASE DE DADOS GERAL  ----
 {
-  SES_BALANCO <- as.data.frame(read_delim("C:/Users/BXnote/Desktop/R/indices SUSEP/BaseCompleta/SES_Balanco.csv",
-                                          ";", escape_double = FALSE, col_types = cols(coenti = col_number(),
-                                                                                       cmpid = col_double(),
-                                                                                       damesano = col_date(format = "%Y%m"),
-                                                                                       quadro = col_skip(), seq = col_skip()),
-                                          locale = locale(decimal_mark = ","),
-                                          trim_ws = TRUE))
-  
+  # SES_BALANCO <- as.data.frame(read_delim("C:/Users/BXnote/Desktop/R/indices SUSEP/BaseCompleta/SES_Balanco.csv",
+  #                                         ";", escape_double = FALSE, col_types = cols(coenti = col_number(),
+  #                                                                                      cmpid = col_double(),
+  #                                                                                      damesano = col_date(format = "%Y%m"),
+  #                                                                                      quadro = col_skip(), seq = col_skip()),
+  #                                         locale = locale(decimal_mark = ","),
+  #                                         trim_ws = TRUE))
+  # 
   
   #nova maneira de importação
-  # destfile<- tempdir()
-  # download.file(url="https://www2.susep.gov.br/download/estatisticas/BaseCompleta.zip", 
-  #               destfile = paste0(destfile,"/BaseCompleta.zip"), mode="wb")
-  # 
-  # 
-  # lista<-unzip(paste0(destfile,"/BaseCompleta.zip"), 
-  #              list = TRUE)[34,1]
-  # 
-  # # SES_Balanco.csv
-  # 
-  # files<-unzip(paste0(destfile,"/BaseCompleta.zip"), files= "SES_Balanco.csv",
-  #              exdir= destfile)
-  # 
-  # 
-  # listaarq <-as.data.frame(read_delim(files,
-  #                                     ";", escape_double = FALSE, col_types = cols(coenti = col_number(),
-  #                                                                                  cmpid = col_double(),
-  #                                                                                  damesano = col_date(format = "%Y%m"),
-  #                                                                                  quadro = col_skip(), seq = col_skip()),
-  #                                     locale = locale(decimal_mark = ","),
-  #                                     trim_ws = TRUE))
-  # file.remove(files)
-  # 
-  # 
-  
-  
+  destfile<- tempdir()
+  download.file(url="https://www2.susep.gov.br/download/estatisticas/BaseCompleta.zip",
+                destfile = paste0(destfile,"/BaseCompleta.zip"), mode="wb")
+
+
+  lista<-unzip(paste0(destfile,"/BaseCompleta.zip"),
+               list = TRUE)[34,1]
+
+  # SES_Balanco.csv
+
+  files<-unzip(paste0(destfile,"/BaseCompleta.zip"), files= "SES_Balanco.csv",
+               exdir= destfile)
+
+
+  SES_BALANCO <-as.data.frame(read_delim(files,
+                                      ";", escape_double = FALSE, col_types = cols(coenti = col_number(),
+                                                                                   cmpid = col_double(),
+                                                                                   damesano = col_date(format = "%Y%m"),
+                                                                                   quadro = col_skip(), seq = col_skip()),
+                                      locale = locale(decimal_mark = ","),
+                                      trim_ws = TRUE))
+  file.remove(files)
+
+tt= paste0(destfile,"/BaseCompleta.zip")
+
+file.remove(tt)
+  remove(tt)
 }# SES_Balanco.CSV  
 
 
