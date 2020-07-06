@@ -1,6 +1,16 @@
+#__________________________________________________________________________________________________
+
+# Índices para Análise Econômico-Financeira das Supervisionadas pela SUSEP
+
+# Autor: Bruno Czarnescki
+# Email: brunocza1@gmail.com
+
+# --/07/2020
+#__________________________________________________________________________________________________
+
 # Escolha a data inicial:
 
-dt_ini <- 201503
+dt_ini <- 201501
 
 #   IMPORTAÇÃO DE PACOTES 
 {
@@ -18,7 +28,7 @@ dt_ini <- 201503
   rm(have, want, junk)
 } 
 
-# Blocos de calculos
+# Blocos de cálculos (importação online)
 {
 
   block_1 <- read_csv("https://raw.githubusercontent.com/brunocza/Indices-SUSEP/master/block_1.csv", 
@@ -37,9 +47,11 @@ dt_ini <- 201503
 }
 
 
-#   BASE DE DADOS GERAL  ----_
+#   Base de dados principal  ----------------------------------------------------------------------
 {
-  # SES_BALANCO <- as.data.frame(read_delim("C:/Users/BXnote/Desktop/R/indices SUSEP/BaseCompleta/SES_Balanco.csv",
+  # codigo pra a impotação local : 
+  
+  # SES_BALANCO <- as.data.frame(read_delim("C:/ ... /SES_Balanco.csv",
   #                                         ";", escape_double = FALSE, col_types = cols(coenti = col_number(),
   #                                                                                      cmpid = col_double(),
   #                                                                                      damesano = col_date(format = "%Y%m"),
@@ -48,7 +60,10 @@ dt_ini <- 201503
   #                                         trim_ws = TRUE))
   # 
   
-  #nova maneira de importação
+  # Código para dowload da base SUSEP, extrção .zip e importação SES_Balanco.csv (apos o dowload, o arquivo zip e a extração do mesmo será excluida automaticamente)
+  # Não é preciso configurar um diretório, pois tudo sera salvo na pasta TEMP do sistema operacional e apos importação.
+  
+
   destfile<- tempdir()
   download.file(url="https://www2.susep.gov.br/download/estatisticas/BaseCompleta.zip",
                 destfile = paste0(destfile,"/BaseCompleta.zip"), mode="wb")
@@ -56,8 +71,6 @@ dt_ini <- 201503
 
   lista<-unzip(paste0(destfile,"/BaseCompleta.zip"),
                list = TRUE)[34,1]
-
-  # SES_Balanco.csv
 
   files<-unzip(paste0(destfile,"/BaseCompleta.zip"), files= "SES_Balanco.csv",
                exdir= destfile)
@@ -72,18 +85,19 @@ dt_ini <- 201503
                                       trim_ws = TRUE))
   file.remove(files)
 
-tt= paste0(destfile,"/BaseCompleta.zip")
+  tt= paste0(destfile,"/BaseCompleta.zip")
 
-file.remove(tt)
-  remove(tt)
+  file.remove(tt)
+  remove(tt,destfile, lista,desfile)
+
 }# SES_Balanco.CSV  
 
 
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#%%%-----------------        seleção de empresas       ---------------------------------------------------
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#                                 Seleção de empresas    
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 {
   LISTAEMPRESAS <- read_delim("https://www2.susep.gov.br/menuestatistica/SES/download/LISTAEMPRESAS.csv", 
@@ -107,13 +121,13 @@ only_usual_conti <- read_csv("https://raw.githubusercontent.com/brunocza/Indices
 
 
 
-# coenti_seguradoras ------------------------------------------------------------------------------
+# coenti_seguradoras ----
 coenti_seguradoras = only_usual_conti %>% filter(., ramo == "seguradora")
 
-# coenti_prev_comp --------------------------------------------------------------------------------
+# coenti_prev_comp ------
 coenti_prev_comp = only_usual_conti %>% filter(., ramo == "previdencia complementar")
 
-# coenti_cap --------------------------------------------------------------------------------------
+# coenti_cap ------------
 coenti_cap = only_usual_conti %>% filter(., ramo == "captalizacao")
 
 
@@ -124,45 +138,36 @@ coenti_cap = only_usual_conti %>% filter(., ramo == "captalizacao")
   df_all_1 <- 
     SES_BALANCO %>% filter(.,
                            damesano >= as.Date(paste0(dt_ini, '01'), format = "%Y%m%d"),
-                           #damesano <= as.Date(paste0(dt_fim, '01'), format = "%Y%m%d"),
                            coenti %in% coenti_seguradoras$coenti ) %>% 
-    arrange(damesano,
-            coenti,
-            cmpid)# %>% 
-  #left_join(coenti_seguradoras,
-  #         by = "coenti", copy=FALSE)
-  
+                           arrange(damesano,
+                                   coenti,
+                                   cmpid)
+                        
   
   
   df_all_2 <- 
     SES_BALANCO %>% filter(.,
                            damesano >= as.Date(paste0(dt_ini, '01'), format = "%Y%m%d"),
-                           # damesano <= as.Date(paste0(dt_fim, '01'), format = "%Y%m%d"),
                            coenti %in% coenti_prev_comp$coenti ) %>% 
-    arrange(damesano,
-            coenti,
-            cmpid)# %>% 
-  #left_join(coenti_prev_comp,
-  #         by = "coenti", copy=FALSE)
-  
+                           arrange(damesano,
+                                    coenti,
+                                    cmpid)
+                
   
   
   df_all_3 <- 
     SES_BALANCO %>% filter(.,
                            damesano >= as.Date(paste0(dt_ini, '01'), format = "%Y%m%d"),
-                           # damesano <= as.Date(paste0(dt_fim, '01'), format = "%Y%m%d"),
                            coenti %in% coenti_cap$coenti ) %>% 
-    arrange(damesano,
-            coenti,
-            cmpid)# %>% 
-  #left_join(coenti_cap,
-  #         by = "coenti", copy=FALSE)
-  
+                          arrange(damesano,
+                                  coenti,
+                                  cmpid)
   
   remove(SES_BALANCO)
+  
 } # df_all_1 ,df_all_1 E df_all_1
 
-# função acu(), tranforma incremental em acumulado
+# função acu(), tranforma incremental em acumulado ------------------------------------------------
 acu <- function(entrada, nome)  {
   
   df <- df_all[df_all$cmpid == entrada, ]
@@ -236,7 +241,7 @@ info <- function(x) {
 # }
 
 
-# Feunção plotar indice da empresa  --------------------
+# Feunção plotar indice da empresa  ---------------------------------------------------------------
 
 indice_grafico  <- function(df, coenti) {
   
@@ -254,9 +259,9 @@ indice_grafico  <- function(df, coenti) {
 
 
 
-########################################################################################################################################
-
-
+###################################################################################################
+#                              SOCIEDADES SEGURADORAS
+###################################################################################################
 
 df_all <- df_all_1  
 
@@ -266,22 +271,22 @@ for (i in 1:nrow(block_1)) {
 
 
 
-#      Índices para Análise Econômico-Financeira das Supervisionadas     -----------------------------------------------
+#      Índices para Análise Econômico-Financeira das Supervisionadas     --------------------------
 # Necessaria as funções acu(), ver(), info(), indice_grafico()
 
 
-#  1.1.1 SOCIEDADES   SEGURADORAS(Inclusive   as   que   operam   com   Previdência Complementar) ---------------------
-#1.1.1ÍNDICE DE RETENÇÃO  ------------------------------
+#  1.1.1 SOCIEDADES   SEGURADORAS(Inclusive as que operam com Previdência Complementar) -----------
+#1.1.1ÍNDICE DE RETENÇÃO  -------------------------------------------------------------------------
 
 
-# irets    ------------------------
+# irets    ----------------------------------------------------------------------------------------
 
 
 irets_1 <- merge(prem_ced_resseg_bruto,prem_emit_liq, by=c("coenti","damesano"),all = TRUE)
 irets_1$indice <- 1 - (-1 * irets_1$prem_ced_resseg_bruto ) / (irets_1$prem_emit_liq)
 
 
-#   1.1.2ÍNDICES DE CUSTOS   ------------------
+#   1.1.2ÍNDICES DE CUSTOS   ----------------------------------------------------------------------
 
 # ISR  --------------------------------------------------------------------------------------------
 
@@ -299,7 +304,6 @@ isr_1$indice <-
 
 
 # IDC   -------------------------------------------------------------------------------------------
-
 
 idc_1 <- merge(custo_aq_seg,custo_aq_prev, by=c("coenti","damesano"),all = TRUE)
 idc_1 <- merge(idc_1 ,prem_ganho, by=c("coenti","damesano"),all = TRUE)
@@ -334,7 +338,6 @@ iordo_1 $indice <- -1 * ( iordo_1 $out_rec_dsp_seg +
 
 # IRRES  ------------------------------------------------------------------------------------------
 
-
 irres_1 <- merge(res_resseg_seg,  res_resseg_prev, by=c("coenti","damesano"),all = TRUE)
 irres_1 <- merge(irres_1,  prem_ganho, by=c("coenti","damesano"),all = TRUE)
 irres_1 <- merge(irres_1,rec_contr_prev, by=c("coenti","damesano"),all = TRUE)
@@ -364,8 +367,7 @@ ida_1 $indice <- -1*( ida_1$dep_adm +ida_1 $dsp_trib) / (  ida_1 $prem_ganho +
                                                              ida_1 $var_opt_prev  )
 
 
-# IC  --------------------------------------------------------------------------------------------
-
+# IC  ---------------------------------------------------------------------------------------------
 
 sin_oco <- acu(11232, "sin_oco")
 dsp_ben <- acu(11248, "dsp_ben")
@@ -417,11 +419,6 @@ ic_1 $indice <- -1*(ic_1$sin_oco  +
                                            ic_1$var_opt_prev        )
 
 
-
-
-
-
-
 # ICA  -------------------------------------------------------------------------------------------
 
 ica_1 <- merge(sin_oco,  dsp_ben, by=c("coenti","damesano"),all = TRUE)
@@ -458,15 +455,11 @@ ica_1 $indice <- -1*(ica_1$sin_oco  +
                                              ica_1$res_fin  )
 
 
-
-
-
 #   1.1.3ÍNDICES DE LIQUIDEZ  ---------------------------------------------------------------------
 
 #   ILC -------------------------------------------------------------------------------------------
 
 #todos incrementais
-
 
 ilc_1 <- merge(ativo_circ,  custo_aq_dif_cp, by=c("coenti","damesano"),all = TRUE)
 ilc_1 <- merge(ilc_1,  dsp_ant_cp, by=c("coenti","damesano"),all = TRUE)
@@ -477,8 +470,6 @@ ilc_1$indice <- (ilc_1$ativo_circ - ilc_1$custo_aq_dif_cp - ilc_1$dsp_ant_cp)/ i
 
 
 #   ILT -------------------------------------------------------------------------------------------
-
-
 
 ilt_1 <- merge(ativo_circ,  custo_aq_dif_cp, by=c("coenti","damesano"),all = TRUE)
 ilt_1 <- merge(ilt_1,  dsp_ant_cp, by=c("coenti","damesano"),all = TRUE)
@@ -499,10 +490,9 @@ ilt_1$indice <-  ( ilt_1$ativo_circ
 
 
 
-#   1.1.4 ÍNDICES DE IMOBILIZAÇÃO   ---------------------------------------------------------------
+#   1.1.4 ÍNDICES DE IMOBILIZAÇÃO   --------------------------------------------------------------
 
 #    IATIM   --------------------------------------------------------------------------------------
-
 
 iatim_1 <- merge(ativo_imob,  im_urb_renda, by=c("coenti","damesano"),all = TRUE)
 iatim_1 <- merge(iatim_1,  im_rural, by=c("coenti","damesano"),all = TRUE)
@@ -523,7 +513,6 @@ iatim_1$indice <- (iatim_1$ativo_imob
 
 
 #    IIMOB    -------------------------------------------------------------------------------------
-
 
 iimob_1 <- merge(ativo_imob,  im_urb_renda, by=c("coenti","damesano"),all = TRUE)
 iimob_1 <- merge(iimob_1,  im_rural, by=c("coenti","damesano"),all = TRUE)
@@ -548,8 +537,6 @@ iimob_1$indice <-  ( iimob_1$ativo_imob
 
 
 #   IPAS      -------------------------------------------------------------------------------------
-
-
 
 ipas_1 <- merge(part_soc_fin,  part_soc_n_fin, by=c("coenti","damesano"),all = TRUE)
 ipas_1 <- merge(ipas_1,  part_soc_fin_ext, by=c("coenti","damesano"),all = TRUE)
@@ -607,8 +594,6 @@ ipas_1$indice <- (  ipas_1$part_soc_fin
   
 }##xxxxxx ESPECIAL CASO xxxxxxxxx
 
-
-
 ilpl_1 <- merge(lucro_liq,  patr_liq_2, by=c("coenti","damesano"),all = TRUE)
 
 ilpl_1$indice <- ilpl_1$lucro_liq /  (  ( ilpl_1$patr_liq_2 + ilpl_1$patr_liq_dez_anterior) / 2)
@@ -616,7 +601,6 @@ ilpl_1$indice <- ilpl_1$lucro_liq /  (  ( ilpl_1$patr_liq_2 + ilpl_1$patr_liq_de
 remove(patr_liq_2)
 remove(patri_liq_aux)
 #    IREPLL ---------------------------------------------------------------------------------------
-
 
 irepll_1 <- merge( rec_aj_inv_ctrl_col,  dsp_aj_inv_ctrl_col, by=c("coenti","damesano"),all = TRUE)
 irepll_1 <- merge( irepll_1 ,  lucro_liq , by=c("coenti","damesano"),all = TRUE)
@@ -626,27 +610,22 @@ irepll_1$ indice <- (irepll_1$rec_aj_inv_ctrl_col - irepll_1$dsp_aj_inv_ctrl_col
 
 #   IGDF     --------------------------------------------------------------------------------------
 
-
 igdf_1 <- merge( res_fin , lucro_liq , by=c("coenti","damesano"),all = TRUE)
 
 igdf_1$indice <- igdf_1$res_fin / igdf_1$lucro_liq
 
 
-#  LIMPA TUDO    --------------------------------------------------------------------------------------
+#  LIMPA TUDO    ----------------------------------------------------------------------------------
 
 remove(list = block_1$name)
 
 
-########################################################################################################################################
-########################################################################################################################################
-########################################################################################################################################
-########################################################################################################################################
-########################################################################################################################################
-########################################################################################################################################
-########################################################################################################################################
+###################################################################################################
+#                         ENTIDADES DE PREVIDÊNCIA COMPLEMENTAR
+###################################################################################################
 
 
-############  Antes de excutar qualquer codigo para empresas de previdência complementar, execute essa linha!    ----------
+
 
 df_all <- df_all_2
 
@@ -655,7 +634,7 @@ for (i in 1:nrow(block_2)) {
 }
 
 
-#      Índices para Análise Econômico-Financeira das Supervisionadas     -----------------------------------------------------------------------------
+#      Índices para Análise Econômico-Financeira das Supervisionadas     --------------------------
 
 # Necessaria as funções acu(), ver(), info(), indice_grafico()
 
@@ -663,10 +642,7 @@ for (i in 1:nrow(block_2)) {
 #  1.2 ENTIDADES DE PREVIDÊNCIA COMPLEMENTAR  -----------------------------------------------------
 #   1.2.1 ÍNDICES DE CUSTOS  ----------------------------------------------------------------------
 
-
 # ISR  --------------------------------------------------------------------------------------------
-
-
 
 isr_2 <- merge(dsp_ben,sin_oco, by=c("coenti","damesano"),all = TRUE)
 isr_2 <- merge(isr_2 ,prem_ganho, by=c("coenti","damesano"),all = TRUE)
@@ -686,7 +662,6 @@ isr_2$indice <-
 
 # IDC   -------------------------------------------------------------------------------------------
 
-
 idc_2 <- merge(custo_aq_seg,custo_aq_prev, by=c("coenti","damesano"),all = TRUE)
 idc_2 <- merge(idc_2 ,prem_ganho, by=c("coenti","damesano"),all = TRUE)
 idc_2 <- merge(idc_2 ,rec_contr_prev, by=c("coenti","damesano"),all = TRUE)
@@ -703,7 +678,6 @@ idc_2$indice <-
                                                          idc_2$res_fin)
 
 # IORDO  ------------------------------------------------------------------------------------------
-
 
 iordo_2 <- merge(out_rec_dsp_seg,rec_emissao_apolice_dpvat, by=c("coenti","damesano"),all = TRUE)
 iordo_2 <- merge(iordo_2 ,out_rec_dsp_prev, by=c("coenti","damesano"),all = TRUE)
@@ -725,7 +699,6 @@ iordo_2$indice <- -1 * (iordo_2$out_rec_dsp_seg +
 
 
 # IRRES  ------------------------------------------------------------------------------------------
-
 
 irres_2 <- merge(res_resseg_seg,  res_resseg_prev, by=c("coenti","damesano"),all = TRUE)
 irres_2 <- merge(irres_2,  prem_ganho, by=c("coenti","damesano"),all = TRUE)
@@ -759,7 +732,6 @@ ida_2 $indice <- -1*( ida_2$dep_adm +ida_2 $dsp_trib) / (  ida_2 $prem_ganho +
 
 
 # ICA  -------------------------------------------------------------------------------------------
-
 
 dsp_adm <- acu(4069, "dsp_adm")
 
@@ -798,13 +770,11 @@ ica_2 $indice <- -1*( ica_2$sin_oco  +
 
 
 
-#   1.2.2 ÍNDICES DE LIQUIDEZ  ---------------------------------------------------------------------
+#   1.2.2 ÍNDICES DE LIQUIDEZ  --------------------------------------------------------------------
 
 #   ICL -------------------------------------------------------------------------------------------
 
 #todos incrementais
-
-
 
 ilc_2 <- merge(ativo_circ,  custo_aq_dif_cp, by=c("coenti","damesano"),all = TRUE)
 ilc_2 <- merge(ilc_2,  dsp_ant_cp, by=c("coenti","damesano"),all = TRUE)
@@ -815,7 +785,6 @@ ilc_2$indice <- (ilc_2$ativo_circ - ilc_2$custo_aq_dif_cp - ilc_2$dsp_ant_cp)/ i
 
 
 #   ILT -------------------------------------------------------------------------------------------
-
 
 ilt_2 <- merge(ativo_circ,  custo_aq_dif_cp, by=c("coenti","damesano"),all = TRUE)
 ilt_2 <- merge(ilt_2,  dsp_ant_cp, by=c("coenti","damesano"),all = TRUE)
@@ -833,9 +802,6 @@ ilt_2$indice <-  ( ilt_2$ativo_circ
                    - ilt_2$custo_aq_diflp 
                    - ilt_2$dsp_ant_lp  )  /  ( ilt_2$pasivo_circ 
                                                + ilt_2$passivo_n_circ )
-
-
-
 
 
 
@@ -905,7 +871,6 @@ ipas_2$indice <- (  ipas_2$part_soc_fin +
 
 
 #    ILPL   ---------------------------------------------------------------------------------------
-
 
 {
   # patr_liq <- incremental(3333, 'patr_liq' )
@@ -1009,8 +974,7 @@ irepll_2 <- merge( irepll_2 ,  lucro_liq , by=c("coenti","damesano"),all = TRUE)
 irepll_2$ indice <- (irepll_2$rec_aj_inv_ctrl_col - irepll_2$dsp_aj_inv_ctrl_col ) / irepll_2$lucro_liq
 
 
-#     IGDF     --------------------------------------------------------------------------------------
-
+#     IGDF     ------------------------------------------------------------------------------------
 
 igdf_2 <- merge( res_fin , lucro_liq , by=c("coenti","damesano"),all = TRUE)
 
@@ -1019,38 +983,26 @@ igdf_2$indice <- igdf_2$res_fin / igdf_2$lucro_liq
 #------------------------------------------------------------------------------------
 remove(list = block_2$name)
 
-###################################################################################################################################
-###################################################################################################################################
-###################################################################################################################################
-###################################################################################################################################
-###################################################################################################################################
-###################################################################################################################################
-
-
-
+###################################################################################################
+#                              SOCIEDADES DE CAPITALIZAÇÃO
+###################################################################################################
 
 
 df_all <- df_all_3 
-
 
 for (i in 1:nrow(block_3)) {
   class(eval(parse(text=block_3[i,1])))
 }
 
 
-
-#      Índices para Análise Econômico-Financeira das Supervisionadas     -----------------------------------------------------------------------------
-
+#      Índices para Análise Econômico-Financeira das Supervisionadas     ---------------------------
 # Necessaria as funções acu(), ver(), info(), indice_grafico()
 
 
 #     1.3     SOCIEDADES DE CAPITALIZAÇÃO     -----------------------------------------------------
 #     1.3.1     ÍNDICES DE CUSTOS     -------------------------------------------------------------
 
-
-
 #     IDC     -------------------------------------------------------------------------------------
-
 
 idc_3 <- merge(custo_aq_cap, rec_liq_tc, by=c("coenti","damesano"),all = TRUE)
 idc_3 <- merge(idc_3 ,res_fin, by=c("coenti","damesano"),all = TRUE)
@@ -1070,7 +1022,6 @@ iordo_3$indice <- -1 * (iordo_3$out_rec_op_cap / ( iordo_3$rec_liq_tc +
 
 #     IDA     -------------------------------------------------------------------------------------
 
-
 ida_3 <- merge(dsp_adm,  dsp_trib, by=c("coenti","damesano"),all = TRUE)
 ida_3 <- merge(ida_3,  rec_liq_tc, by=c("coenti","damesano"),all = TRUE)
 ida_3 <- merge(ida_3,res_fin, by=c("coenti","damesano"),all = TRUE)
@@ -1087,13 +1038,7 @@ irsort_3 <- merge(irsort_3,  res_fin, by=c("coenti","damesano"),all = TRUE)
 irsort_3$indice <- -1 * (irsort_3$result_sort / (irsort_3$rec_liq_tc + irsort_3$res_fin))
 
 
-
-
 #     ICC     -------------------------------------------------------------------------------------
-
-
-
-
 
 icc_3 <- merge(custo_aq_cap,  out_rec_op_cap, by=c("coenti","damesano"),all = TRUE)
 icc_3 <- merge(icc_3,  dsp_adm, by=c("coenti","damesano"),all = TRUE)
@@ -1111,9 +1056,9 @@ icc_3 $indice <- -1*( icc_3$custo_aq_cap  +
 
 
 
-#     1.3.2     ÍNDICES DE LIQUIDEZ     ---------------------------------------------------------------------
+#     1.3.2     ÍNDICES DE LIQUIDEZ     --------------------------------------------------------------
 
-#     ICL     -------------------------------------------------------------------------------------------
+#     ICL     ----------------------------------------------------------------------------------------
 
 #todos incrementais
 
@@ -1127,9 +1072,6 @@ ilc_3$indice <- (ilc_3$ativo_circ - ilc_3$custo_aq_dif_cp - ilc_3$dsp_ant_cp)/ i
 
 
 #     ILT      -------------------------------------------------------------------------------------------
-
-
-
 
 ilt_3 <- merge(ativo_circ,  custo_aq_dif_cp, by=c("coenti","damesano"),all = TRUE)
 ilt_3 <- merge(ilt_3,  dsp_ant_cp, by=c("coenti","damesano"),all = TRUE)
@@ -1150,11 +1092,9 @@ ilt_3$indice <-  ( ilt_3$ativo_circ
 
 
 
-
 #     1.3.3     ÍNDICES DE IMOBILIZAÇÃO     ---------------------------------------------------------------
 
 #     IATIM     --------------------------------------------------------------------------------------
-
 
 iatim_3 <- merge(ativo_imob,  im_urb_renda, by=c("coenti","damesano"),all = TRUE)
 iatim_3 <- merge(iatim_3,  im_rural, by=c("coenti","damesano"),all = TRUE)
@@ -1175,7 +1115,6 @@ iatim_3$indice <- (iatim_3$ativo_imob
 
 
 #     IIMOB     -------------------------------------------------------------------------------------
-
 
 iimob_3 <- merge(ativo_imob,  im_urb_renda, by=c("coenti","damesano"),all = TRUE)
 iimob_3 <- merge(iimob_3,  im_rural, by=c("coenti","damesano"),all = TRUE)
@@ -1237,7 +1176,6 @@ for (i in 1:nrow(patr_liq_3)) {
 }
 
 
-
 patri_liq_aux <- subset(patr_liq_3, subset = as.numeric(strftime(damesano, "%m")) == 12)
 
 colnames(patri_liq_aux)[colnames(patri_liq_aux)      # Rename two variable names
@@ -1275,13 +1213,10 @@ remove(patri_liq_aux)
 
 #    IREPLL ---------------------------------------------------------------------------------------
 
-
 irepll_3 <- merge( rec_aj_inv_ctrl_col,  dsp_aj_inv_ctrl_col, by=c("coenti","damesano"),all = TRUE)
 irepll_3 <- merge( irepll_3 ,  lucro_liq , by=c("coenti","damesano"),all = TRUE)
 
 irepll_3$ indice <- (irepll_3$rec_aj_inv_ctrl_col - irepll_3$dsp_aj_inv_ctrl_col ) / irepll_3$lucro_liq
-
-
 
 
 #   IGDF     --------------------------------------------------------------------------------------
@@ -1296,165 +1231,94 @@ igdf_3$indice <- igdf_3$res_fin / igdf_3$lucro_liq
 remove(list = block_3$name)
 
 
-#####################################################################################################################
+############# Empilhamento de indices: GERAÇÃO DE OUTPUT  ############################################
 
 {
-  irets_1 = irets_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'irets_1')
-  isr_1 = isr_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'isr_1')
-  idc_1  = idc_1  %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'idc_1 ')
-  iordo_1 = iordo_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iordo_1')
-  irres_1 = irres_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'irres_1')
-  ida_1 = ida_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ida_1')
-  ic_1 = ic_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ic_1')
-  ica_1 = ica_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ica_1')
-  ilc_1 = ilc_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilc_1')
-  ilt_1 = ilt_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilt_1')
-  iatim_1 = iatim_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iatim_1')
-  iimob_1 = iimob_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iimob_1')
-  ipas_1 = ipas_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ipas_1')
-  ilpl_1 = ilpl_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilpl_1')
-  irepll_1 = irepll_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'irepll_1')
-  igdf_1 = igdf_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'igdf_1')
+  irets_1 = irets_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'irets')
+  isr_1 = isr_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'isr')
+  idc_1  = idc_1  %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'idc')
+  iordo_1 = iordo_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iordo')
+  irres_1 = irres_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'irres')
+  ida_1 = ida_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ida')
+  ic_1 = ic_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ic')
+  ica_1 = ica_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ica')
+  ilc_1 = ilc_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilc')
+  ilt_1 = ilt_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilt')
+  iatim_1 = iatim_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iatim')
+  iimob_1 = iimob_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iimob')
+  ipas_1 = ipas_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ipas')
+  ilpl_1 = ilpl_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilpl')
+  irepll_1 = irepll_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'irepll')
+  igdf_1 = igdf_1 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'igdf')
   
   
   
-  indices_01 <- dplyr:: bind_rows(irets_1, 
-                                  isr_1, 
-                                  idc_1, 
-                                  iordo_1, 
-                                  irres_1, 
-                                  ida_1, 
-                                  ic_1, 
-                                  ica_1, 
-                                  ilc_1, 
-                                  ilt_1, 
-                                  iatim_1, 
-                                  iimob_1, 
-                                  ipas_1, 
-                                  ilpl_1, 
-                                  irepll_1, 
-                                  igdf_1)
+  indices_01 <- dplyr:: bind_rows(irets_1,  isr_1,  idc_1,  iordo_1,  irres_1,
+                                  ida_1, ic_1,  ica_1, ilc_1,  ilt_1,  iatim_1, iimob_1,  ipas_1, ilpl_1,  irepll_1,  igdf_1)
   
-  remove(irets_1, 
-         isr_1, 
-         idc_1, 
-         iordo_1, 
-         irres_1, 
-         ida_1, 
-         ic_1, 
-         ica_1, 
-         ilc_1, 
-         ilt_1, 
-         iatim_1, 
-         iimob_1, 
-         ipas_1, 
-         ilpl_1, 
-         irepll_1, 
-         igdf_1)
+  remove(irets_1, isr_1,  idc_1,  iordo_1,  irres_1, ida_1,  ic_1,   ica_1, 
+         ilc_1,   ilt_1,  iatim_1,  iimob_1,  ipas_1,  ilpl_1,  irepll_1,  igdf_1)
   
 }  # seguradora
 
 {
-  isr_2 = isr_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'isr_2')
-  idc_2 = idc_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'idc_2')
-  iordo_2 = iordo_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iordo_2')
-  irres_2 = irres_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'irres_2')
-  ida_2 = ida_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ida_2')
-  ica_2 = ica_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ica_2')
-  ilc_2 = ilc_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilc_2')
-  ilt_2 = ilt_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilt_2')
-  iatim_2 = iatim_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iatim_2')
-  iimob_2 = iimob_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iimob_2')
-  ipas_2 = ipas_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ipas_2')
-  ilpl_2 = ilpl_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilpl_2')
-  irepll_2 = irepll_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'irepll_2')
-  igdf_2 = igdf_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'igdf_2')
+  isr_2 = isr_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'isr')
+  idc_2 = idc_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'idc')
+  iordo_2 = iordo_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iordo')
+  irres_2 = irres_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'irres')
+  ida_2 = ida_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ida')
+  ica_2 = ica_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ica')
+  ilc_2 = ilc_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilc')
+  ilt_2 = ilt_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilt')
+  iatim_2 = iatim_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iatim')
+  iimob_2 = iimob_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iimob')
+  ipas_2 = ipas_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ipas')
+  ilpl_2 = ilpl_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilpl')
+  irepll_2 = irepll_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'irepll')
+  igdf_2 = igdf_2 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'igdf')
   
   
   
-  indices_02 <- dplyr:: bind_rows(isr_2, 
-                                  idc_2, 
-                                  iordo_2, 
-                                  irres_2, 
-                                  ida_2, 
-                                  ica_2, 
-                                  ilc_2, 
-                                  ilt_2, 
-                                  iatim_2, 
-                                  iimob_2, 
-                                  ipas_2, 
-                                  ilpl_2, 
-                                  irepll_2, 
-                                  igdf_2) 
+  indices_02 <- dplyr:: bind_rows(isr_2, dc_2,  iordo_2, irres_2, ida_2, ica_2,
+                                  ilc_2, ilt_2,  iatim_2, iimob_2,  ipas_2, ilpl_2,  irepll_2, igdf_2) 
   
   
-  remove(isr_2, 
-         idc_2, 
-         iordo_2, 
-         irres_2, 
-         ida_2, 
-         ica_2, 
-         ilc_2, 
-         ilt_2, 
-         iatim_2, 
-         iimob_2, 
-         ipas_2, 
-         ilpl_2, 
-         irepll_2, 
-         igdf_2)
+  remove(isr_2, idc_2, iordo_2, irres_2, ida_2, ica_2, ilc_2, ilt_2,
+         iatim_2,  iimob_2,  ipas_2,  ilpl_2,  irepll_2,   igdf_2)
   
 } # previdencia complementar
 
 {
   
-  idc_3 = idc_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'idc_3')
-  iordo_3 = iordo_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iordo_3')
-  ida_3 = ida_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ida_3')
-  irsort_3 = irsort_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'irsort_3')
-  icc_3 = icc_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'icc_3')
-  ilc_3 = ilc_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilc_3')
-  ilt_3 = ilt_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilt_3')
-  iatim_3 = iatim_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iatim_3')
-  iimob_3 = iimob_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iimob_3')
-  ipas_3 = ipas_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ipas_3')
-  ilpl_3 = ilpl_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilpl_3')
-  irepll_3 = irepll_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'irepll_3')
-  igdf_3 = igdf_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'igdf_3')
+  idc_3 = idc_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'idc')
+  iordo_3 = iordo_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iordo')
+  ida_3 = ida_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ida')
+  irsort_3 = irsort_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'irsort')
+  icc_3 = icc_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'icc')
+  ilc_3 = ilc_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilc')
+  ilt_3 = ilt_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilt')
+  iatim_3 = iatim_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iatim')
+  iimob_3 = iimob_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'iimob')
+  ipas_3 = ipas_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ipas')
+  ilpl_3 = ilpl_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'ilpl')
+  irepll_3 = irepll_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'irepll')
+  igdf_3 = igdf_3 %>% select(.,coenti, damesano, indice) %>% mutate( tipo = 'igdf')
   
   
-  indices_03 <- dplyr:: bind_rows(idc_3, 
-                                  iordo_3, 
-                                  ida_3, 
-                                  irsort_3, 
-                                  icc_3, 
-                                  ilc_3, 
-                                  ilt_3, 
-                                  iatim_3, 
-                                  iimob_3, 
-                                  ipas_3, 
-                                  ilpl_3, 
-                                  irepll_3, 
-                                  igdf_3) 
+  indices_03 <- dplyr:: bind_rows(idc_3, iordo_3, ida_3, irsort_3, icc_3,
+                                  ilc_3, ilt_3, iatim_3, iimob_3,  ipas_3,
+                                  ilpl_3,  irepll_3, igdf_3) 
   
   
-  remove(idc_3, 
-         iordo_3, 
-         ida_3, 
-         irsort_3, 
-         icc_3, 
-         ilc_3, 
-         ilt_3, 
-         iatim_3, 
-         iimob_3, 
-         ipas_3, 
-         ilpl_3, 
-         irepll_3, 
-         igdf_3)
+  remove(idc_3, iordo_3,  ida_3, irsort_3, icc_3, ilc_3, ilt_3, iatim_3,
+         iimob_3, ipas_3, ilpl_3, irepll_3, igdf_3)
   
 }  # capitalização
 
-
+#------------------------------------------------------------------------------------
 remove(df_all,df_all_1,df_all_2,df_all_3)
+
+
 
 # Exportar para planilha    --------------------
 # 
