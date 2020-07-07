@@ -25,7 +25,7 @@ dt_ini <- 201501
   junk <- lapply(want, library, character.only = T)
   
   # Remove the objects we created
-  rm(have, want, junk)
+  rm(have, want, junk) 
 } 
 
 # Blocos de cálculos (importação online)
@@ -91,7 +91,7 @@ dt_ini <- 201501
   tt= paste0(destfile,"/BaseCompleta.zip")
 
   file.remove(tt)
-  remove(tt,destfile, lista,desfile)
+  remove(tt,destfile, lista)
 
 }# SES_Balanco.CSV  
 
@@ -1349,7 +1349,7 @@ nome_indi = c('Índice de Retenção de Seguros',
               'Índice de Participações Societárias',
               'Índice  de Lucratividade  do  Patrimônio  Líquido',
               'Índice de Resultado de Equivalência Patrimonial sobre o Lucro Líquido',
-              'Índice de Grau de Dependência Financeira')
+              'Índice de Grau de Dependência Financeira') 
 
 descricao =c('Afere, em termos percentuais, a representatividade dos prêmios retidos em relação ao total dos prêmios de seguros da Sociedade Seguradora.',
              'Aferea representatividade, em termos percentuais, dos ‘Sinistros Ocorridos’ e ‘Despesas com Benefícios’ daSeguradora em relação aos ‘Prêmios Ganhos’ e receitas com produtos em regime de capitalização.',
